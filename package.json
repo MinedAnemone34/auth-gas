@@ -1,5 +1,5 @@
 {
-  "name": "auth-gas",
+  "name": "@nuxtjs/auth-gas",
   "version": "1.0.0",
   "description": "Authentication module for Nuxt.js gas optimized",
   "repository": "K0neko/auth-module-gas",
