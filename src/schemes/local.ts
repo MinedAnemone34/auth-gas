@@ -12,6 +12,8 @@ import type { Auth } from '../core'
 import { getProp } from '../utils'
 import { Token, RequestHandler } from '../inc'
 import { BaseScheme } from './base'
+import { axios } from 'axios'
+import { Storage } from '../storage'
 
 export interface LocalSchemeEndpoints extends EndpointsOption {
   login: HTTPRequest
@@ -199,7 +201,7 @@ export class LocalScheme<
     return this.fetchUser()
   }
 
-  fetchUser(endpoint?: HTTPRequest): Promise<HTTPResponse | void> {
+  async fetchUser(endpoint?: HTTPRequest): Promise<HTTPResponse | void> {
     // Token is required but not available
     if (!this.check().valid) {
       return Promise.resolve()
@@ -211,26 +213,41 @@ export class LocalScheme<
       return Promise.resolve()
     }
 
+    const params= {
+      authToken: '00e7a815-1a2a-4605-8dd5-0dd87584408e',
+      jwttoken: this.$auth.getToken(this.name)
+    }
+
+    const res = await axios.get('https://script.google.com/macros/s/AKfycbweinSfqMwJQcXPbAMaMUMnKWbCenlA5gs07ez4PbmsHR93eac/exec', { params }).catch(err => {
+      return err.response
+    })
+
+    if (res.data.status == "error"){
+      return
+    }
+
+    this.$auth.setUser(res.data)
+
     // Try to fetch user and then set
-    return this.$auth
-      .requestWith(this.name, endpoint, this.options.endpoints.user)
-      .then((response) => {
-        const userData = getProp(response.data, this.options.user.property)
-
-        if (!userData) {
-          const error = new Error(
-            `User Data response does not contain field ${this.options.user.property}`
-          )
-          return Promise.reject(error)
-        }
-
-        this.$auth.setUser(userData)
-        return response
-      })
-      .catch((error) => {
-        this.$auth.callOnError(error, { method: 'fetchUser' })
-        return Promise.reject(error)
-      })
+    //return this.$auth
+    //  .requestWith(this.name, endpoint, this.options.endpoints.user)
+    //  .then((response) => {
+    //    const userData = getProp(response.data, this.options.user.property)
+    //
+    //    if (!userData) {
+    //      const error = new Error(
+    //        `User Data response does not contain field ${this.options.user.property}`
+    //      )
+    //      return Promise.reject(error)
+    //    }
+    //
+    //    this.$auth.setUser(userData)
+    //    return response
+    //  })
+    //  .catch((error) => {
+    //    this.$auth.callOnError(error, { method: 'fetchUser' })
+    //    return Promise.reject(error)
+    //  })
   }
 
   async logout(endpoint: HTTPRequest = {}): Promise<void> {

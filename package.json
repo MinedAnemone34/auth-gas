@@ -1,10 +1,10 @@
 {
-  "name": "@nuxtjs/auth",
-  "version": "5.0.0-dev",
-  "description": "Authentication module for Nuxt.js",
-  "repository": "nuxt-community/auth-module",
-  "license": "MIT",
+  "name": "auth-gas",
+  "version": "1.0.0",
+  "description": "Authentication module for Nuxt.js gas optimized",
+  "repository": "K0neko/auth-module-gas",
   "sideEffects": "false",
+  "private": true,
   "exports": {
     ".": {
       "require": "./dist/module.js"
